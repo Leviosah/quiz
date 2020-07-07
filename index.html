@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>JS Quiz</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Style the header */
+header {
+  background-color: #666;
+  padding: 30px;
+  text-align: center;
+  font-size: 35px;
+  color: white;
+}
+
+/* Create two columns/boxes that floats next to each other */
+nav {
+  float: left;
+  width: 30%;
+  height: 300px; /* only for demonstration, should be removed */
+  background: #ccc;
+  padding: 20px;
+}
+
+/* Style the list inside the menu */
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+article {
+  float: left;
+  padding: 20px;
+  width: 70%;
+  background-color: #f1f1f1;
+  height: 300px; /* only for demonstration, should be removed */
+}
+
+/* Clear floats after the columns */
+section:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Style the footer */
+footer {
+  background-color: #777;
+  padding: 10px;
+  text-align: center;
+  color: white;
+}
+
+/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
+@media (max-width: 600px) {
+  nav, article {
+    width: 100%;
+    height: auto;
+  }
+}
+h1 {
+  font-weight: normal;
+}
+
+li {
+  display: inline-block;
+  font-size: 1.5em;
+  list-style-type: none;
+  padding: 1em;
+  text-transform: uppercase;
+}
+
+li span {
+  display: block;
+  font-size: 4.5rem;
+}
+.container {
+  color: #333;
+  margin: 0 auto;
+  padding: 0.5rem;
+  text-align: center;
+}
+.button {
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  position: relative;
+  left: 40%;
+  top: 40%
+}
+
+.timer {
+  font-size: 5.5em;
+  padding: 10px;
+  text-align: center;
+  margin: 0 auto;
+  background: #ccc;
+}
+
+.timerContainer {
+    font-size: 2.5em;
+}
+
+.button2 {background-color: #008CBA;} /* Blue */
+
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+<header>
+  <h2>Javascript Quiz</h2>
+</header>
+
+<section>
+  <nav>
+    <div class="container">
+      <h1 class="timerContainer">Timer</h1>
+      <div class="timer">90</div>
+    </div>
+  </nav>  
+  <article>
+    <button class="button button2">Start Quiz</button>
+  </article>
+  <div id="quiz"></div>
+  <button id="submit">Submit Question</button>
+  <div id="results"></div>
+</section>
+
+<footer>
+</footer>
+
+<script>
+
+// --------------------------TIMER FUNCTION------------------------- //
+// This function will need to start at 90 seconds and countdown each second. 
+// The timer should reset when the quiz resets.
+// It should be triggered when the user clicks a "start quiz" button.
+// The timer should subtract an additional 15 seconds for each question answered incorrectly.
+// Once the timer reaches 0, the game should end and score should be recorded.
+
+
+function countdownTimer() {
+var timer = 90;
+
+var interval = setInterval(function() {
+    timer--;
+    $('.timer').text(timer);
+    if (timer === 0) clearInterval(interval);
+    //if question is answered wrong - 15 seconds
+}, 1000);
+};
+
+
+
+</script>
+<script src="questions.js"></script>
+</body>
+</html>
