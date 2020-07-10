@@ -1,298 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>JS Quiz</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-/* Style the header */
-header {
-  background-color: #666;
-  padding: 30px;
-  text-align: center;
-  font-size: 35px;
-  color: white;
-}
-
-/* Create two columns/boxes that floats next to each other */
-nav {
-  float: left;
-  width: 30%;
-  height: 300px; /* only for demonstration, should be removed */
-  background: #ccc;
-  padding: 20px;
-}
-
-/* Style the list inside the menu */
-nav ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-article {
-  float: left;
-  padding: 20px;
-  width: 70%;
-  background-color: #f1f1f1;
-  height: 300px; /* only for demonstration, should be removed */
-}
-
-/* Clear floats after the columns */
-section:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-/* Style the footer */
-footer {
-  background-color: #777;
-  padding: 40px;
-  text-align: center;
-  color: white;
-  position: relative;
-}
-
-/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
-@media (max-width: 600px) {
-  nav, article {
-    width: 100%;
-    height: auto;
-  }
-}
-h1 {
-  font-weight: normal;
-}
-
-li {
-  display: inline-block;
-  font-size: 1.5em;
-  list-style-type: none;
-  padding: 1em;
-  text-transform: uppercase;
-}
-
-li span {
-  display: block;
-  font-size: 4.5rem;
-}
-.container {
-  color: #333;
-  margin: 0 auto;
-  padding: 0.5rem;
-  text-align: center;
-}
-.button {
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  position: relative;
-  left: 40%;
-  top: 40%
-}
-
-.timer {
-  font-size: 5.5em;
-  padding: 10px;
-  text-align: center;
-  margin: 0 auto;
-  background: #ccc;
-}
-
-.timerContainer {
-    font-size: 2.5em;
-}
-
-.button2 {background-color: #008CBA;} /* Blue */
-.button3 {
-    color: #666;
-    text-align: center;
-}
-.center {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-
-button[disabled] {
-  cursor: default;
-  background: #c0c7cf;
-}
-
-</style>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="./style.css" rel = "stylesheet">
+  <title>Quiz App</title>
 </head>
-
 <body>
-
-<header>
-  <h2>Javascript Quiz</h2>
-</header>
-
-<section>
-  <nav>
-    <div class="container">
-      <h1 class="timerContainer">Timer</h1>
-      <div class="timer">90</div>
+  <div class = "container">
+    <div id = "question-container" class="hide">
+      <div id="question">Question</div>
+      <div id="answer-buttons" class = "btn-grid">
+        <button class="btn">Answer1</button>
+        <button class="btn">Answer2</button>
+        <button class="btn">Answer3</button>
+        <button class="btn">Answer4</button>
+      </div>
     </div>
-  </nav>  
-  <article>
-    <button id = "startButton" class="button button2">Start Quiz</button>
-    <h2 id = "questionTitle"></h2>
-    <ul id = "selectionList"></ul>
-  </article>
-</section>
-
-<footer>
-    <div class="center">
-        <button id = "scoreButton" class="button button3">View Scoreboard</button>
+    <div class = "control">
+      <button id="start-btn" class = "start-btn btn">Start</button>
+      <button id="next-btn" class = "next-btn hide">Next</button>
     </div>
-</footer>
+  </div>
+</body>
+</html>
 
 <script>
 
-// --------------------------TIMER FUNCTION------------------------- //
-// This function will need to start at 90 seconds and countdown each second. 
-// The timer should reset when the quiz resets.
-// It should be triggered when the user clicks a "start quiz" button.
-// The timer should subtract an additional 15 seconds for each question answered incorrectly.
-// Once the timer reaches 0, the game should end and score should be recorded.
+var score = 0;
+
+const questionElement = document.getElementById('question');
+const answerButtonsElement = document.getElementById('answer-buttons');
+
+let shuffledQuestions, currentQuestionIndex
+// set questions
+
 var questions = [
     {
-        title: 'Commonly used data types DO NOT include:',
-        choices: ['strings','booleans','alerts','numbers'],
-        answer: 'alerts'
+        question: 'Commonly used data types DO NOT include:',
+        answers: [
+          { text: 'strings', correct: false},
+          { text: 'booleans', correct: false},
+          { text: 'alerts', correct: true},
+          { text: 'numbers', correct: false},
+        ]
     },
     {
-        title: 'The condition in an if / else statement is enclosed within _______',
-        choices: ['quotes','curly brackets','parentheses','square brackets'],
-        answer: 'parentheses'
+        question: 'The condition in an if / else statement is enclosed within _______',
+        answers: [
+          { text: 'quotes', correct: false},
+          { text: 'curly brackets', correct: false},
+          { text: 'parentheses', correct: true},
+          { text: 'square brackets', correct: false},
+        ]
     },
     {
-        title: 'What is the HTML tag under which one can write the JavaScript code?',
-        choices: ['<javascript>','<scripted>','<script>','<js>'],
-        answer: '<script>'
+        question: 'What is the HTML tag under which one can write the JavaScript code?',
+        answers: [
+          { text: '<javascript>', correct: false},
+          { text: '<scripted>', correct: false},
+          { text: '<js>', correct: false},
+          { text: '<script>', correct: true},
+        ]
     },
     {
-        title: 'Which of the following is the correct syntax for "coding is fun" in an alert box using JavaScript?',
-        choices: ['alertbox("coding is fun");','msg("coding is fun");','msgbox("coding is fun");','alert("coding is fun");'],
-        answer: 'alert("coding is fun");'
+        question: 'Which of the following is the correct syntax for "coding is fun" in an alert box using JavaScript?',
+        answers: [
+          { text: 'alert("coding is fun");', correct: true},
+          { text: 'alertbox("coding is fun");', correct: false},
+          { text: 'msg("coding is fun");', correct: false},
+          { text: 'msgbox("coding is fun");', correct: false},
+        ]
     },
     {
-        title: 'What is the proper syntax for creating a function in JavaScript named masterfunc?',
-        choices: ['function = masterfunc()','function masterfunc()','function := masterfunc()','function : masterfunc()'],
-        answer: 'function masterfunc()'
+        question: 'What is the proper syntax for creating a function in JavaScript named masterfunc?',
+        answers: [
+          { text: 'function = masterfunc()', correct: false},
+          { text: 'function masterfunc()', correct: true},
+          { text: 'function := masterfunc()', correct: false},
+          { text: 'function : masterfunc()', correct: false},
+        ]
     },
     {
-        title: 'What is the method in JavaScript ised to remove the whitespace at the beginning and end of any string?',
-        choices: ['trim()','strip()','cut()','slice()'],
-        answer: 'trim()'
+        question: 'What is the method in JavaScript ised to remove the whitespace at the beginning and end of any string?',
+        answers: [
+          { text: 'trim()', correct: true},
+          { text: 'strip()', correct: false},
+          { text: 'cut()', correct: false},
+          { text: 'slice()', correct: false},
+        ]
     }
 ];
-const questionTitle = document.getElementById('questionTitle');
-const selectionList = document.getElementById('selectionList');
-const submitButton = document.getElementById('submit');
-const startButton = document.getElementById('startButton');
-const scoreButton = document.getElementById('scoreButton');
+// get all the elements
+const startButton = document.getElementById('start-btn');
+const nextButton = document.getElementById('next-btn');
+const questionContainerElement = document.getElementById('question-container');
 
-var i = 0;
-var length1 = questions.length;
-var correctAnswer = 0;
+startButton.addEventListener('click', startQuiz)
+nextButton.addEventListener('click', () => {
+  currentQuestionIndex++
+  setNextQuestion()
+})
 
-// countdown timer from 90
-function countdownTimer() {
-var timer = 90;
-
-var interval = setInterval(function() {
-    timer--;
-    $('.timer').text(timer);
-    if (timer === 0) clearInterval(interval);
-    //if question is answered wrong - 15 seconds
-      // compair user choice with the correct answer
-        // if userchoice === questions answer (dont move time)
-        // else if userchoie is not === to quection answer, dec timer down 15 secons
-}, 1000);
-};
-
-
-// button click to start quiz
-startButton.onclick = function () {
-  if(i > questions.length -1) {
-    i=0;
-  }
-  buildQuiz(i);
-  i++
-  startButton.style.visibility = "hidden";
-};
-// Step 1: create element and populate with survey questions. 
-//         add paginiation so that only 1 question is shown at a time
-
-function buildQuiz(qNum) {
-  var individualQuestion = questions[i];
-  questionTitle.innerText = individualQuestion.title
-
-  selectionList.innerHTML = "";
-  for(key in individualQuestion.choices){
-    var radioBtnName = "question"+i+"_choice";
-    var choiceText = individualQuestion.choices[key];
-    selectionList.appendChild(createLi(radioBtnName,choiceText));
-  }
+// loop through the questions
+function startQuiz() {
+  console.log('started');
+  startButton.classList.add('hide');
+  shuffledQuestions = questions.sort(() => Math.random() - .5);
+  currentQuestionIndex = 0;
+  questionContainerElement.classList.remove('hide');
+  setNextQuestion()
+}
+ 
+function setNextQuestion() {
+  resetState();
+  showQuestion(shuffledQuestions[currentQuestionIndex]);
 
 }
-
-function createLi(name, choiceText) {
-  var e = document.createElement('li');
-  var radioHtml = '<input type="radio" name"' + name + '"';
-  radioHtml += '/>';
-  radioHtml += choiceText;
-  e.innerHTML = radioHtml;
-  return e;
+function showQuestion(question) {
+  questionElement.innerText = question.question;
+  question.answers.forEach(answer => {
+    const button = document.createElement('button')
+    button.innerText = answer.text
+    button.classList.add('btn')
+    if (answer.correct) {
+      button.dataset.correct = answer.correct
+    }
+    button.addEventListener('click', selectAnswer)
+    answerButtonsElement.appendChild(button);
+})
 }
 
+function resetState() {
+  nextButton.classList.add('hide')
+  while (answerButtonsElement.firstChild) {
+    answerButtonsElement.removeChild(answerButtonsElement.firstChild)
+  }
+}
+function selectAnswer(e) {
+  const selectedButton = e.target
+  const correct = selectedButton.dataset.correct
+  setStatusClass(document.body, correct)
+  Array.from(answerButtonsElement.children).forEach(button => {
+    setStatusClass(button, button.dataset.correct)
+  })
+  if (shuffledQuestions.length > currentQuestionIndex + 1) {
+    nextButton.classList.remove('hide')
+  } else {
+    startButton.innerText = 'Restart'
+    startButton.classList.remove('hide')
+  }
+}
 
-// Step 2: record whether answer was correct (1) or incorrect (0) in local memory
+function setStatusClass(element, correct) {
+  clearStatusClass(element)
+  if (correct) {
+    element.classList.add('correct')
+  } else {
+    element.classList.add('wrong')
+  }
+}
 
-// Step 3: Tie quize builder function (with create element and pagination)
-//         to both "start quiz" button and timer, so that when "start quiz"
-//         is pressed, both the timer starts and the quiz builder starts
-
-// Step 4: Tie result of answer to timer so that when an incorrect answer is given,
-//         15 seconds is subtracted from timer
-
-// Step 5: Build in logic that ends the quiz once all questions are answered,
-//         or time elapses. Once quiz ends, prompt user to input initials. Timer then
-//         resets, as does the quiz.
-
-// Step 6: Input both initials and associated user score into a scoreboard that can
-//         be viewed once the "view scoreboard" button is pressed
-
-
-
-
-
-console.log(questions);
-
-
-
-
+function clearStatusClass(element) {
+  element.classList.remove('correct')
+  element.classList.remove('wrong')
+}
 </script>
-<script src="questions.js"></script>
 </body>
 </html>
