@@ -7,6 +7,9 @@
   <title>Quiz App</title>
 </head>
 <body>
+  <div class = "bonusBox control">
+    <h1 id = "countDown" style = "font-size: 50px;"></h1>
+  </div>
   <div class = "container">
     <div id = "question-container" class="hide">
       <div id="question">Question</div>
@@ -22,10 +25,45 @@
       <button id="next-btn" class = "next-btn hide">Next</button>
     </div>
   </div>
+  <div class = "bonusBox control">
+    <div id = "score-container" class="hide">
+      <h1 id = "score"></h1>
+    </div>
+  </div>
 </body>
 </html>
 
 <script>
+
+const countDownElement = document.getElementById('countDown');
+
+var index = 0;
+var timerInterval;
+var secondsLeft = 90;
+var highScore = [];
+
+function setTime() {
+  timerInterval = setInterval(function () {
+    secondsLeft--;
+    countDownElement.textContent = secondsLeft + " seconds remain.";
+
+    if (secondsLeft <= 0) {
+      clearInterval(timerInterval);
+      alert("Game Over")
+      endGame();
+    }
+  }, 1000);
+};
+
+function initialInput() {
+  document.getElementById("score").textContent = localStorage.getItem("score");
+  var initScore = (document.getElementById("score").textContent);
+  highScore = initScore.substr(2);
+  console.log(highScore)
+  };
+
+initialInput();
+
 
 var score = 0;
 
@@ -35,68 +73,18 @@ const answerButtonsElement = document.getElementById('answer-buttons');
 let shuffledQuestions, currentQuestionIndex
 // set questions
 
-var questions = [
-    {
-        question: 'Commonly used data types DO NOT include:',
-        answers: [
-          { text: 'strings', correct: false},
-          { text: 'booleans', correct: false},
-          { text: 'alerts', correct: true},
-          { text: 'numbers', correct: false},
-        ]
-    },
-    {
-        question: 'The condition in an if / else statement is enclosed within _______',
-        answers: [
-          { text: 'quotes', correct: false},
-          { text: 'curly brackets', correct: false},
-          { text: 'parentheses', correct: true},
-          { text: 'square brackets', correct: false},
-        ]
-    },
-    {
-        question: 'What is the HTML tag under which one can write the JavaScript code?',
-        answers: [
-          { text: '<javascript>', correct: false},
-          { text: '<scripted>', correct: false},
-          { text: '<js>', correct: false},
-          { text: '<script>', correct: true},
-        ]
-    },
-    {
-        question: 'Which of the following is the correct syntax for "coding is fun" in an alert box using JavaScript?',
-        answers: [
-          { text: 'alert("coding is fun");', correct: true},
-          { text: 'alertbox("coding is fun");', correct: false},
-          { text: 'msg("coding is fun");', correct: false},
-          { text: 'msgbox("coding is fun");', correct: false},
-        ]
-    },
-    {
-        question: 'What is the proper syntax for creating a function in JavaScript named masterfunc?',
-        answers: [
-          { text: 'function = masterfunc()', correct: false},
-          { text: 'function masterfunc()', correct: true},
-          { text: 'function := masterfunc()', correct: false},
-          { text: 'function : masterfunc()', correct: false},
-        ]
-    },
-    {
-        question: 'What is the method in JavaScript ised to remove the whitespace at the beginning and end of any string?',
-        answers: [
-          { text: 'trim()', correct: true},
-          { text: 'strip()', correct: false},
-          { text: 'cut()', correct: false},
-          { text: 'slice()', correct: false},
-        ]
-    }
-];
+function endGame() {
+  document.getElementById("score").textContent = "Score: " + time;
+  document.getElementById("score-container").style.visibility = 'visible'
+}
+
 // get all the elements
 const startButton = document.getElementById('start-btn');
 const nextButton = document.getElementById('next-btn');
 const questionContainerElement = document.getElementById('question-container');
 
 startButton.addEventListener('click', startQuiz)
+startButton.addEventListener('click', startTimer)
 nextButton.addEventListener('click', () => {
   currentQuestionIndex++
   setNextQuestion()
@@ -166,5 +154,6 @@ function clearStatusClass(element) {
   element.classList.remove('wrong')
 }
 </script>
+<script src="questions.js"></script>
 </body>
 </html>

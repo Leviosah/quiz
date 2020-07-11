@@ -197,3 +197,28 @@ function createLi(name, choiceText) {
   e.innerHTML = radioHtml;
   return e;
 }
+
+const startingMinutes = 0.1;
+let time = startingMinutes * 60;
+
+const countDownElement = document.getElementById('countDown');
+
+function startTimer() {
+setInterval(updateCountDown, 1000);
+
+function updateCountDown() {
+  const minutes = Math.floor(time / 60);
+  let seconds = time % 60;
+
+  seconds = seconds < 10 ? '0' + seconds : seconds;
+
+  countDownElement.innerHTML = `${minutes}: ${seconds}`;
+  time--;
+
+  if (time <= 0) {
+    clearInterval(time);
+    alert("game over")
+    endGame();
+  }
+};
+};

@@ -19,6 +19,17 @@ body {
   background-color: hsl(var(--hue), 100%, 20%);
 }
 
+.bonusBox {
+  width: 300px;
+  height: 100px;
+  max-width: 80%;
+  background-color: white;
+  border-radius: 2px;
+  align-content: center;
+  display: flex;
+  margin: 0 10px;
+}
+
 .container {
   width: 800px;
   max-width: 80%;
@@ -73,3 +84,4 @@ color: black;
 .hide {
   display: none;
 }
+
