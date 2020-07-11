@@ -26,7 +26,7 @@
     </div>
   </div>
   <div class = "bonusBox control">
-    <div id = "score-container" class="hide">
+    <div id = "score-container">
       <h1 id = "score"></h1>
     </div>
   </div>
@@ -36,17 +36,44 @@
 <script>
 
 const countDownElement = document.getElementById('countDown');
+const questionElement = document.getElementById('question');
+const answerButtonsElement = document.getElementById('answer-buttons');
+const startButton = document.getElementById('start-btn');
+const nextButton = document.getElementById('next-btn');
+const questionContainerElement = document.getElementById('question-container');
 
+let shuffledQuestions, currentQuestionIndex
 var index = 0;
 var timerInterval;
 var secondsLeft = 90;
-var highScore = [];
+var userInit;
+var highScore;
 
+
+
+// event listener for start button starts the game. Starts the time and the quiz function
+startButton.addEventListener("click", function (event) {
+    secondLeft = 90;
+    event.preventDefault();
+    setTime();
+    startQuiz(event);
+});
+
+// eventlistener for next button calls next question as well as runs setNextQuestion function
+nextButton.addEventListener('click', () => {
+  currentQuestionIndex++
+  setNextQuestion()
+})
+
+// timer function. 
 function setTime() {
+    // setInterval window function. This sets the interval to count by seconds (1000ms)
   timerInterval = setInterval(function () {
+    // takes seconds left and subtracts by 1      
     secondsLeft--;
-    countDownElement.textContent = secondsLeft + " seconds remain.";
-
+    // display how many seconds left
+    countDownElement.textContent = secondsLeft + " seconds left";
+    // if seconds left <= 0 then set interval is cleared (counter stops) and game over alert is sent. Also calls gameOver function
     if (secondsLeft <= 0) {
       clearInterval(timerInterval);
       alert("Game Over")
@@ -55,65 +82,104 @@ function setTime() {
   }, 1000);
 };
 
+// inputs score into score box. 
 function initialInput() {
-  document.getElementById("score").textContent = localStorage.getItem("score");
-  var initScore = (document.getElementById("score").textContent);
-  highScore = initScore.substr(2);
+
+  userInit = prompt("What are your inititals?");
+
+  console.log(userInit);
+
+  highScore = localStorage.getItem(userInit) || 0;
+
+
+    // gets score element and writes what is in local storage to it
+  document.getElementById("score").textContent = highScore;
+   // sets variable and adds content of score box to it
+  //var initScore = (document.getElementById("score").textContent);
+  // highscore = grabs two character string from initscore, which is pulled from the box
+  // highScore = initScore.substr(2);
+  // console log the highscore
   console.log(highScore)
   };
 
+  // runs initial input, which fills in the high score box
 initialInput();
 
-
-var score = 0;
-
-const questionElement = document.getElementById('question');
-const answerButtonsElement = document.getElementById('answer-buttons');
-
-let shuffledQuestions, currentQuestionIndex
-// set questions
-
+ // end game function. This tells the program what to do when time runs out or questions are complete.
 function endGame() {
-  document.getElementById("score").textContent = "Score: " + time;
-  document.getElementById("score-container").style.visibility = 'visible'
+    // pulls score box and writes "score: how many seconds left on timer"
+  console.log("execute end game")
+  document.getElementById("score").textContent = "Score: " + secondsLeft;
+  document.getElementById("score-container").style.visibility = 'visible';
+  console.log(secondsLeft);
+  clearInterval(timerInterval);
+
+  // runs the store score function to store new score
+  storeScore(secondsLeft);
+  resetState();
+  secondsLeft = 90;
 }
 
-// get all the elements
-const startButton = document.getElementById('start-btn');
-const nextButton = document.getElementById('next-btn');
-const questionContainerElement = document.getElementById('question-container');
 
-startButton.addEventListener('click', startQuiz)
-startButton.addEventListener('click', startTimer)
-nextButton.addEventListener('click', () => {
-  currentQuestionIndex++
-  setNextQuestion()
-})
+// this function determines whether a new high score was reached
+function storeScore(score) {
+    // this looks whether this is a first run and score is 0/null. if so then you set a new score
 
-// loop through the questions
+    if ((highScore == 0) || (highScore == null)) {
+        //var initials = prompt("please enter your initials");
+        // this sets the highscore var = to initials and seconds left
+        // highScore = userInit + " " + score;
+        // put new high score in storage
+        localStorage.setItem(userInit, score);
+    } else {
+        // else, if you beat your high score, then input your initials and log new one
+        if (score > highScore) {
+           // initials = prompt("please enter your initials");
+            //highScore = initials + " " + score;
+            localStorage.setItem(userInit, score);
+        // else, if you didn't beat your score then don't log anything. 
+        } else {
+            alert("You didn't beat your high score")
+        }
+    }
+}
+
+// this function starts the quiz by setting up environment
 function startQuiz() {
   console.log('started');
+  // first hide the start button
   startButton.classList.add('hide');
+  // randomizes questions
   shuffledQuestions = questions.sort(() => Math.random() - .5);
+  // start at index 0
   currentQuestionIndex = 0;
+  // show the question container
   questionContainerElement.classList.remove('hide');
+  // run setNextQuestion
   setNextQuestion()
 }
- 
+
+// this sets up the queue
 function setNextQuestion() {
   resetState();
   showQuestion(shuffledQuestions[currentQuestionIndex]);
 
 }
+
+// this runs through the primed questions
 function showQuestion(question) {
+    //show the question
   questionElement.innerText = question.question;
   question.answers.forEach(answer => {
+      // create buttons for each answer
     const button = document.createElement('button')
+     // populate buttons with text
     button.innerText = answer.text
+    // set style
     button.classList.add('btn')
-    if (answer.correct) {
-      button.dataset.correct = answer.correct
-    }
+    // if answer is correct than log
+    button.dataset.correct = answer.correct
+    console.log(button.dataset)
     button.addEventListener('click', selectAnswer)
     answerButtonsElement.appendChild(button);
 })
@@ -128,21 +194,28 @@ function resetState() {
 function selectAnswer(e) {
   const selectedButton = e.target
   const correct = selectedButton.dataset.correct
+  console.log(e)
+  console.log(selectedButton)
   setStatusClass(document.body, correct)
   Array.from(answerButtonsElement.children).forEach(button => {
     setStatusClass(button, button.dataset.correct)
   })
+  if (correct === "false") {
+    secondsLeft -= 15
+  }
   if (shuffledQuestions.length > currentQuestionIndex + 1) {
     nextButton.classList.remove('hide')
   } else {
     startButton.innerText = 'Restart'
     startButton.classList.remove('hide')
+    alert("game over")
+    endGame();
   }
 }
 
 function setStatusClass(element, correct) {
   clearStatusClass(element)
-  if (correct) {
+  if (correct === "true") {
     element.classList.add('correct')
   } else {
     element.classList.add('wrong')
